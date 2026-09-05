@@ -1,5 +1,5 @@
 /* 满分英语 Service Worker：离线可用（需通过 http/https 访问） */
-const CACHE = 'fullscore-en-v3';
+const CACHE = 'fullscore-en-v4';
 const ASSETS = [
   './',
   './index.html',
