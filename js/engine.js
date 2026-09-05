@@ -60,9 +60,10 @@
     var w = { b: word.b || 0, due: word.due || 0, ok: word.ok || 0, ng: word.ng || 0 };
     var now = Date.now(), day = 86400000;
     if (grade === 2) { // 认识
+      var oldB = Math.min(6, w.b || 0);
       w.b = Math.min(6, w.b + 1); w.ok++;
       if (w.b === 0) w.b = 1; // 首次认识升到盒子1
-      w.due = now + E.SRS_INTERVALS[w.b] * day;
+      w.due = now + E.SRS_INTERVALS[oldB] * day; // 用“本次认识前所在的盒子”取间隔：0→1天、1→2天……
     } else if (grade === 1) { // 模糊：盒位不变，次日再见
       w.ng++;
       if (w.b === 0) { w.b = 0; }
