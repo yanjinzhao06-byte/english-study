@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<title>满分英语 · 河南专升本</title>
+<meta name="description" content="从高考 50 分到河南专升本英语满分的系统学习计划：分级词汇、语法精讲、真题结构专项、全真模考与打卡统计。">
+<meta name="theme-color" content="#4f46e5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="满分英语">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app" class="app-root">
+  <!-- 左侧导航（大屏）/ 顶栏 -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand" data-nav="home">
+      <span class="brand-logo">满</span>
+      <span class="brand-text"><b>满分英语</b><small>河南专升本 · 公共英语</small></span>
+    </div>
+    <nav class="side-nav" id="sideNav"></nav>
+    <div class="side-foot">
+      <div class="mini-card" id="sideStreak"></div>
+    </div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="菜单">☰</button>
+      <div class="crumb" id="crumb"></div>
+      <div class="top-right">
+        <div class="score-pill" id="topScore" title="当前预估分 / 目标 150"></div>
+        <button class="icon-btn" id="syncBtn" title="备份 / 恢复数据">⤓</button>
+      </div>
+    </header>
+    <main class="content" id="screen" tabindex="-1"></main>
+  </div>
+
+  <!-- 移动端底部导航 -->
+  <nav class="bottom-nav" id="bottomNav"></nav>
+</div>
+
+<!-- 通用弹层 -->
+<div class="modal-mask" id="modalMask" hidden>
+  <div class="modal" id="modalBox" role="dialog"></div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script src="js/data-vocab.js"></script>
+<script src="js/data-course.js"></script>
+<script src="js/data-bank.js"></script>
+<script src="js/engine.js"></script>
+<script src="js/core.js"></script>
+<script src="js/ui-home.js"></script>
+<script src="js/ui-vocab.js"></script>
+<script src="js/ui-grammar.js"></script>
+<script src="js/ui-practice.js"></script>
+<script src="js/ui-mock.js"></script>
+<script src="js/ui-plan.js"></script>
+<script src="js/ui-me.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function () { window.Eng.start(); });
+  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+    navigator.serviceWorker.register('sw.js').catch(function(){});
+  }
+</script>
+</body>
+</html>
