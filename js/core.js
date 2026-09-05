@@ -142,6 +142,7 @@
   /* ---------------- 导航与视图 ---------------- */
   var NAV = [
     { id: 'home', ico: '🏠', t: '首页' },
+    { id: 'review', ico: '⏰', t: '复习' },
     { id: 'plan', ico: '🧭', t: '计划' },
     { id: 'vocab', ico: '📚', t: '单词' },
     { id: 'grammar', ico: '✏️', t: '语法' },
@@ -149,7 +150,7 @@
     { id: 'mock', ico: '📝', t: '模考' },
     { id: 'me', ico: '👤', t: '我的' }
   ];
-  var CRUMB = { home: '学习首页', plan: '学习计划 · 50→150', vocab: '单词记忆', grammar: '语法系统课', practice: '真题专项训练', mock: '全真模拟考试', me: '我的 · 统计与记录' };
+  var CRUMB = { home: '学习首页', review: '艾宾浩斯复习 · 每日打卡', plan: '学习计划 · 50→150', vocab: '单词记忆', grammar: '语法系统课', practice: '真题专项训练', mock: '全真模拟考试', me: '我的 · 统计与记录' };
 
   Eng.navHTML = function () {
     return NAV.map(function (n) {
