@@ -1,5 +1,5 @@
 /* 满分英语 Service Worker：离线可用（需通过 http/https 访问） */
-const CACHE = 'fullscore-en-v4';
+const CACHE = 'fullscore-en-v5';
 const ASSETS = [
   './',
   './index.html',
@@ -18,6 +18,7 @@ const ASSETS = [
   './js/ui-mock.js',
   './js/ui-plan.js',
   './js/ui-me.js',
+  './js/ui-review.js',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/apple-touch-icon.png'
