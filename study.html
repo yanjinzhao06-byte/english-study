@@ -67,10 +67,11 @@
   <section class="screen" id="scr-list">
     <header class="hd hd-row">
       <button class="btn-back" data-go="home">‹</button>
-      <div>
+      <div style="flex:1 1 auto;min-width:0">
         <h1 id="list-title">目录</h1>
         <p class="hd-sub" id="list-sub"></p>
       </div>
+      <div class="hd-badge" id="list-badge" hidden></div>
     </header>
     <div id="list-search-wrap" class="search-wrap" hidden>
       <input id="search-input" type="search" placeholder="搜关键词，如：五行 / 藏象 / 亡阳" autocomplete="off">
