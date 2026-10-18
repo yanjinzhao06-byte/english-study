@@ -1,0 +1,36 @@
+【英语 · 背单词】部署包
+========================================
+
+这个文件夹里的东西就是完整可运行的网站，可以直接上传到任意静态托管：
+
+  index.html              首页（唯一入口页面）
+  styles.css              样式
+  app.js                  游戏逻辑
+  words.js                词库（U1–U12 共 3792 词）
+  manifest.webmanifest    PWA 配置（可"添加到主屏幕"）
+  sw.js                   Service Worker（加进主屏幕后没网也能玩）
+  _headers                Netlify 响应头（其它平台会自动忽略）
+  icon-*.png / apple-touch-icon.png   图标
+
+【怎么上传】
+方案 A：Netlify（当前用的就是这个）
+  · 已经部署好了，网址见桌面备忘
+  · 要更新：把这个文件夹或 英语-部署包.zip 拖到 https://app.netlify.com/drop，
+    或者跑 python 部署到Netlify.py
+
+方案 B：GitHub Pages
+  1. 新建仓库，把这几个文件传到仓库根目录
+  2. Settings → Pages → Source 选 main / root → Save
+  3. 1 分钟后访问 https://你的用户名.github.io/仓库名/
+
+方案 C：腾讯云 COS / 阿里云 OSS
+  · 上传后开启「静态网站」功能，用 Bucket 网址访问（国内最快，需实名 + 少量费用）
+
+【手机加进主屏幕】
+  iPhone/iPad：Safari 打开网址 → 分享 → 添加到主屏幕
+  安卓 Chrome：菜单 → 添加到主屏幕 / 安装应用
+  装完是独立图标，点开全屏运行，而且没网也能玩（内容已缓存）。
+
+【更新内容时注意】
+  重新上传后，把 sw.js 里的  const VERSION = 'v2'  的版本号往上加一（v3、v4…），
+  手机上的旧缓存才会更新，否则会一直用缓存里的老版本。
