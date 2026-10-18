@@ -1,75 +1,229 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
-<title>满分英语 · 河南专升本</title>
-<meta name="description" content="从高考 50 分到河南专升本英语满分的系统学习计划：分级词汇、语法精讲、真题结构专项、全真模考与打卡统计。">
-<meta name="theme-color" content="#4f46e5">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ffe3f1">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="满分英语">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icons/icon-192.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<link rel="stylesheet" href="css/app.css">
+<meta name="apple-mobile-web-app-title" content="英语">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>🍭 英语 · 单词配对</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div id="app" class="app-root">
-  <!-- 左侧导航（大屏）/ 顶栏 -->
-  <aside class="sidebar" id="sidebar">
-    <div class="brand" data-nav="home">
-      <span class="brand-logo">满</span>
-      <span class="brand-text"><b>满分英语</b><small>河南专升本 · 公共英语</small></span>
-    </div>
-    <nav class="side-nav" id="sideNav"></nav>
-    <div class="side-foot">
-      <div class="mini-card" id="sideStreak"></div>
-    </div>
-  </aside>
 
-  <div class="main">
-    <header class="topbar">
-      <button class="icon-btn menu-btn" id="menuBtn" aria-label="菜单">☰</button>
-      <div class="crumb" id="crumb"></div>
-      <div class="top-right">
-        <div class="score-pill" id="topScore" title="当前预估分 / 目标 150"></div>
-        <button class="icon-btn" id="syncBtn" title="备份 / 恢复数据">⤓</button>
-      </div>
-    </header>
-    <main class="content" id="screen" tabindex="-1"></main>
+<!-- 背景装饰 -->
+<div class="bg" aria-hidden="true">
+  <span class="blob b1"></span>
+  <span class="blob b2"></span>
+  <span class="blob b3"></span>
+  <span class="blob b4"></span>
+</div>
+
+<!-- ============ 首页 ============ -->
+<section id="screen-menu" class="screen screen-menu is-active">
+  <header class="hero">
+    <div class="hero-emoji">🍭</div>
+    <h1>英语</h1>
+    <p class="hero-sub">点一个 <b>中文</b>，再点对应的 <b>英文</b>，配对成功就消除～</p>
+  </header>
+
+  <button class="checkin-card" id="checkinCard">
+    <span class="cc-emoji" id="ccEmoji">📅</span>
+    <span class="cc-main">
+      <span class="cc-title">连续打卡 <b id="ccStreak">0</b> 天</span>
+      <span class="cc-sub" id="ccToday">今天还没打卡，玩一轮就行～</span>
+    </span>
+    <span class="cc-go">查看 ›</span>
+  </button>
+
+  <div class="counter-strip" id="counterStrip">
+    <div class="count-item">
+      <span class="count-num" id="cTotal">0</span>
+      <span class="count-lab">累计复习次数</span>
+    </div>
+    <div class="count-item">
+      <span class="count-num" id="cToday">0</span>
+      <span class="count-lab">今天复习次数</span>
+    </div>
+    <div class="count-item">
+      <span class="count-num" id="cWords">0</span>
+      <span class="count-lab">累计配对单词</span>
+    </div>
   </div>
 
-  <!-- 移动端底部导航 -->
-  <nav class="bottom-nav" id="bottomNav"></nav>
+  <div class="panel">
+    <div class="field">
+      <div class="label">选择词库 <span class="hint" id="bankHint"></span></div>
+      <div class="chips" id="unitChips"></div>
+    </div>
+
+    <div class="field">
+      <div class="label">每轮对数</div>
+      <div class="chips" id="sizeChips">
+        <button class="chip" data-size="4">4 对</button>
+        <button class="chip" data-size="6">6 对</button>
+        <button class="chip" data-size="8">8 对</button>
+        <button class="chip" data-size="10">10 对</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="label">出词方式</div>
+      <div class="chips" id="modeChips">
+        <button class="chip" data-mode="random">🔀 随机抽词</button>
+        <button class="chip" data-mode="order">📖 按书顺序</button>
+      </div>
+      <p class="order-note" id="orderNote" hidden></p>
+    </div>
+
+    <div class="field">
+      <div class="label">反馈</div>
+      <div class="switches">
+        <label class="switch"><input type="checkbox" id="swHaptics"><span class="track"><span class="knob"></span></span><span class="switch-text">震动反馈</span></label>
+        <label class="switch"><input type="checkbox" id="swSound"><span class="track"><span class="knob"></span></span><span class="switch-text">音效</span></label>
+        <label class="switch"><input type="checkbox" id="swSpeak"><span class="track"><span class="knob"></span></span><span class="switch-text">朗读单词</span></label>
+        <label class="switch"><input type="checkbox" id="swPos"><span class="track"><span class="knob"></span></span><span class="switch-text">显示词性</span></label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary btn-big" id="btnStart">开始 🎈</button>
+    <button class="btn btn-ghost btn-big btn-book" id="btnBook">📖 生词本 / 错题本 <b class="cnt" id="cntBook">0</b></button>
+    <a class="btn btn-ghost btn-big" id="btnStudy" href="study.html" style="display:flex;align-items:center;justify-content:center;text-decoration:none">📚 学习中心 · 中医 / 语法 / 改错</a>
+    <p class="tiny-note" id="hapticNote"></p>
+  </div>
+
+  <footer class="foot">词库来自「144」「155」两个文件夹的 12 个 PDF · 共 <b id="totalWords">0</b> 词</footer>
+</section>
+
+<!-- ============ 游戏页 ============ -->
+<section id="screen-game" class="screen screen-game">
+  <header class="topbar">
+    <button class="icon-btn" id="btnBack" aria-label="返回">←</button>
+    <div class="topbar-mid">
+      <div class="tb-title" id="tbTitle">U1</div>
+      <div class="tb-sub" id="tbSub">剩余 0 对</div>
+    </div>
+    <button class="icon-btn" id="btnShuffle" aria-label="打乱顺序">🔀</button>
+  </header>
+
+  <div class="statbar">
+    <div class="stat"><span class="stat-k">连击</span><span class="stat-v" id="statCombo">×0</span></div>
+    <div class="stat"><span class="stat-k">用时</span><span class="stat-v" id="statTime">0:00</span></div>
+    <div class="stat"><span class="stat-k">得分</span><span class="stat-v" id="statScore">0</span></div>
+  </div>
+
+  <div class="progress"><span id="progressBar"></span></div>
+
+  <div class="lastmatch" id="lastMatch"></div>
+
+  <main class="board" id="board"></main>
+
+  <div class="gamebar segbar" id="segBar" hidden>
+    <button class="btn btn-ghost" id="btnPrevSeg">⏮ 上一段</button>
+    <button class="btn btn-ghost" id="btnNextSeg">⏭ 下一段</button>
+  </div>
+
+  <div class="gamebar">
+    <button class="btn btn-ghost" id="btnRestart">↻ 重开本轮</button>
+    <button class="btn btn-ghost" id="btnHome">🏠 主菜单</button>
+  </div>
+</section>
+
+<!-- ============ 生词本 / 错题本 ============ -->
+<section id="screen-book" class="screen screen-book">
+  <header class="topbar">
+    <button class="icon-btn" id="btnBookBack" aria-label="返回">←</button>
+    <div class="topbar-mid">
+      <div class="tb-title">📖 生词本 / 错题本</div>
+      <div class="tb-sub" id="bookSub">共 0 个词</div>
+    </div>
+    <button class="icon-btn" id="btnBookClear" aria-label="清空当前分类">🗑️</button>
+  </header>
+
+  <div class="chips book-tabs" id="bookTabs">
+    <button class="chip" data-tab="all">全部 <b class="cnt" id="tabAllCnt">0</b></button>
+    <button class="chip" data-tab="wrong">❌ 错题 <b class="cnt" id="tabWrongCnt">0</b></button>
+    <button class="chip" data-tab="star">⭐ 收藏 <b class="cnt" id="tabStarCnt">0</b></button>
+  </div>
+
+  <p class="book-tip" id="bookTip">点一行可以听发音 · ❌ 是点错过的词（答对会自动减少，掌握后自动移出）· ⭐ 是长按卡片手动收藏的词</p>
+
+  <div class="book-list" id="bookList"></div>
+
+  <div class="gamebar">
+    <button class="btn btn-primary" id="btnPractice">开始练习这 0 个词</button>
+  </div>
+</section>
+
+<!-- ============ 结算浮层 ============ -->
+<div class="overlay" id="overlay">
+  <div class="sheet">
+    <div class="sheet-emoji" id="sheetEmoji">🎉</div>
+    <h2 id="sheetTitle">本轮完成！</h2>
+    <p class="sheet-sub" id="sheetSub">太棒啦，继续下一轮吧～</p>
+    <div class="result-grid">
+      <div class="res"><span class="res-k">用时</span><span class="res-v" id="resTime">-</span></div>
+      <div class="res"><span class="res-k">最高连击</span><span class="res-v" id="resCombo">-</span></div>
+      <div class="res"><span class="res-k">得分</span><span class="res-v" id="resScore">-</span></div>
+      <div class="res"><span class="res-k">正确率</span><span class="res-v" id="resAcc">-</span></div>
+    </div>
+    <div class="sheet-btns">
+      <div class="sheet-checkin" id="sheetCheckin"></div>
+      <button class="btn btn-retry" id="btnRetryWrong">❌ 重练本轮的错词</button>
+      <button class="btn btn-primary" id="btnNext">下一轮 →</button>
+      <button class="btn btn-ghost" id="btnMenu2">返回菜单</button>
+    </div>
+  </div>
 </div>
 
-<!-- 通用弹层 -->
-<div class="modal-mask" id="modalMask" hidden>
-  <div class="modal" id="modalBox" role="dialog"></div>
-</div>
+<!-- ============ 打卡记录 ============ -->
+<section id="screen-checkin" class="screen screen-checkin">
+  <header class="topbar">
+    <button class="icon-btn" id="btnCheckinBack" aria-label="返回">←</button>
+    <div class="topbar-mid">
+      <div class="tb-title">📅 打卡记录</div>
+      <div class="tb-sub" id="ckSub">连续 0 天</div>
+    </div>
+    <span class="icon-btn" aria-hidden="true" style="visibility:hidden">·</span>
+  </header>
 
-<div class="toast-wrap" id="toastWrap"></div>
+  <div class="ck-stats">
+    <div class="ck-stat"><span class="ck-num" id="ckStreak">0</span><span class="ck-lab">连续天数</span></div>
+    <div class="ck-stat"><span class="ck-num" id="ckBest">0</span><span class="ck-lab">最长连续</span></div>
+    <div class="ck-stat"><span class="ck-num" id="ckTotal">0</span><span class="ck-lab">累计打卡天</span></div>
+  </div>
 
-<script src="js/data-vocab.js"></script>
-<script src="js/data-course.js"></script>
-<script src="js/data-bank.js"></script>
-<script src="js/engine.js"></script>
-<script src="js/core.js"></script>
-<script src="js/ui-home.js"></script>
-<script src="js/ui-vocab.js"></script>
-<script src="js/ui-grammar.js"></script>
-<script src="js/ui-practice.js"></script>
-<script src="js/ui-mock.js"></script>
-<script src="js/ui-plan.js"></script>
-<script src="js/ui-me.js"></script>
-<script src="js/ui-review.js"></script>
+  <div class="ck-today" id="ckToday"></div>
+
+  <div class="ck-head">
+    <span>最近 10 周</span>
+    <span class="ck-legend">少 <i class="lv0"></i><i class="lv1"></i><i class="lv2"></i><i class="lv3"></i><i class="lv4"></i> 多</span>
+  </div>
+  <div class="ck-grid" id="ckGrid"></div>
+
+  <p class="book-tip">
+    · 每天完成 <b>1 轮</b>（把场上的词全部配完）就算打卡成功<br>
+    · 点格子可以看那天练了多少<br>
+    · 连续天数断一天就归零，最长连续会一直留着
+  </p>
+</section>
+
+<!-- 轻提示 -->
+<div class="toast" id="toast"></div>
+<script src="words.js"></script>
+<script src="app.js"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function () { window.Eng.start(); });
-  if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
-    navigator.serviceWorker.register('sw.js').catch(function(){});
-  }
+// 注册 Service Worker：装到主屏幕后没网也能玩（file:// 打开时自动跳过）
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
 </script>
 </body>
 </html>
