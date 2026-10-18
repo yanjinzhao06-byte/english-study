@@ -68,26 +68,21 @@ body{
 .entry.ghost{background:rgba(255,255,255,.6); border-style:dashed}
 .foot-note{margin:auto 2px 0; font-size:11.5px; color:#b3a6bd; line-height:1.65}
 
-/* ---------- 首页累计统计卡 ---------- */
-.stats-card{
-  flex:0 0 auto; margin-top:4px; background:linear-gradient(135deg,#fff6fb,#f3f0ff);
-  border:1px solid var(--line); border-radius:var(--rr); padding:14px 16px;
-  box-shadow:var(--sh);
+/* ---------- 模块页练习统计条 ---------- */
+.mod-stats{
+  flex:0 0 auto; display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+  background:linear-gradient(135deg,#fff6fb,#f3f0ff);
+  border:1px solid var(--line); border-radius:14px;
+  padding:10px 13px; margin-bottom:10px; box-shadow:var(--sh);
 }
-.st-hd{display:flex; align-items:baseline; gap:6px; font-size:12.5px; color:var(--ink-l)}
-.st-hd b{font-size:26px; color:#a34a7c; line-height:1; margin:0 2px}
-.st-row{display:flex; flex-wrap:wrap; gap:6px 14px; margin:10px 0 8px; font-size:12.5px; color:#5d5068}
-.st-row b{color:#a34a7c; font-size:14px}
-.st-row em{font-style:normal; color:#a99cb5; font-size:11px}
-.st-ft{
-  display:flex; align-items:center; justify-content:space-between; gap:8px;
-  font-size:11px; color:#b3a6bd; border-top:1px dashed var(--line); padding-top:8px;
+.ms-main{font-size:13px; color:#5d5068}
+.ms-main b{font-size:19px; color:#a34a7c; margin:0 2px; line-height:1}
+.ms-sub{font-size:11.5px; color:#a99cb5}
+.ms-reset{
+  margin-left:auto; border:1px solid var(--line); background:#fff; color:#b3a6bd;
+  font-size:11px; font-family:inherit; padding:4px 10px; border-radius:20px; cursor:pointer;
 }
-.st-reset{
-  border:1px solid var(--line); background:#fff; color:#a99cb5;
-  font-size:11px; font-family:inherit; padding:4px 9px; border-radius:20px; cursor:pointer;
-}
-.st-reset:active{transform:scale(.95)}
+.ms-reset:active{transform:scale(.95)}
 
 /* ---------- 搜索 ---------- */
 .search-wrap{flex:0 0 auto; margin-bottom:10px}
@@ -286,10 +281,10 @@ body{
   .foot-note{color:#8d7f99}
   .gram-trick{background:#332c22; border-color:#54482c; color:#dcc79c}
   .answer{background:#2a2431}
-  .stats-card{background:linear-gradient(135deg,#2e2637,#282336)}
-  .st-row{color:#d6cbe0}
-  .st-hd b,.st-row b{color:#f0a8ce}
-  .st-reset{background:#332b3c; color:#b3a6bd}
+  .mod-stats{background:linear-gradient(135deg,#2e2637,#282336)}
+  .ms-main{color:#d6cbe0}
+  .ms-main b{color:#f0a8ce}
+  .ms-reset{background:#332b3c; color:#b3a6bd}
   .btn-mini{background:#332b3c; color:#cdc0d8}
   .word:active{background:#3d3048}
   .btn-mode,.tool-btn{background:#332b3c; color:#cdc0d8}
