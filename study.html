@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#ffe3f1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="学习中心">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>📚 学习中心 · 中医基础 + 英语语法 + 改错</title>
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="stylesheet" href="study.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ============ 首页 ============ -->
+  <section class="screen active" id="scr-home">
+    <header class="hd">
+      <h1>📚 学习中心</h1>
+      <p class="hd-sub">中医基础理论 · 英语语法 · 改错练习</p>
+    </header>
+
+    <div class="entry" data-go="tcm">
+      <div class="entry-ico">🀄</div>
+      <div class="entry-txt">
+        <strong>中医基础理论</strong>
+        <span id="cnt-tcm">—</span>
+      </div>
+      <div class="entry-arrow">›</div>
+    </div>
+
+    <div class="entry" data-go="gram">
+      <div class="entry-ico">📐</div>
+      <div class="entry-txt">
+        <strong>英语语法卡片</strong>
+        <span id="cnt-gram">—</span>
+      </div>
+      <div class="entry-arrow">›</div>
+    </div>
+
+    <div class="entry" data-go="err">
+      <div class="entry-ico">🔍</div>
+      <div class="entry-txt">
+        <strong>改错找错练习</strong>
+        <span id="cnt-err">—</span>
+      </div>
+      <div class="entry-arrow">›</div>
+    </div>
+
+    <div class="entry ghost" data-go="back">
+      <div class="entry-ico">🍭</div>
+      <div class="entry-txt">
+        <strong>回到单词消消乐</strong>
+        <span>练习 U1–U12 词库</span>
+      </div>
+      <div class="entry-arrow">›</div>
+    </div>
+
+    <p class="foot-note" id="edition-note"></p>
+  </section>
+
+  <!-- ============ 目录（章节目录） ============ -->
+  <section class="screen" id="scr-list">
+    <header class="hd hd-row">
+      <button class="btn-back" data-go="home">‹</button>
+      <div>
+        <h1 id="list-title">目录</h1>
+        <p class="hd-sub" id="list-sub"></p>
+      </div>
+    </header>
+    <div id="list-search-wrap" class="search-wrap" hidden>
+      <input id="search-input" type="search" placeholder="搜关键词，如：五行 / 藏象 / 亡阳" autocomplete="off">
+    </div>
+    <div id="list-tools" class="list-tools" hidden></div>
+    <div id="list-body" class="list-body"></div>
+  </section>
+
+  <!-- ============ 卡片浏览（中医 / 语法通用） ============ -->
+  <section class="screen" id="scr-cards">
+    <header class="hd hd-row">
+      <button class="btn-back" data-go="list">‹</button>
+      <div style="flex:1 1 auto;min-width:0">
+        <h1 id="cards-title">卡片</h1>
+        <p class="hd-sub"><span id="card-pos">1 / 1</span> · <span id="card-memo">已背 0</span></p>
+      </div>
+      <button class="btn-mode" id="btnSelfTest" title="自测模式：先遮住答案">🙈 自测</button>
+    </header>
+    <div id="cards-body" class="cards-body"></div>
+  </section>
+
+  <!-- ============ 改错答题 ============ -->
+  <section class="screen" id="scr-quiz">
+    <header class="hd hd-row">
+      <button class="btn-back" data-go="list">‹</button>
+      <div>
+        <h1 id="quiz-title">改错</h1>
+        <p class="hd-sub"><span id="quiz-pos">1 / 1</span> · 点出错的那个词</p>
+      </div>
+    </header>
+
+    <div class="quiz-body">
+      <div class="sentence" id="quiz-sentence"></div>
+      <div class="quiz-tools">
+        <button class="btn-mini" id="btn-noerror">这行没错</button>
+        <button class="btn-mini" id="btn-skip">跳过</button>
+      </div>
+      <div class="answer" id="quiz-answer" hidden></div>
+      <button class="btn-next" id="btn-next" hidden>下一题 ›</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="data/data-tcm.js"></script>
+<script src="data/data-grammar.js"></script>
+<script src="data/data-errors.js"></script>
+<script src="study.js"></script>
+<script>
+// 注册 Service Worker：这样直接打开 study.html 也能离线缓存（file:// 时自动跳过）
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('sw.js').catch(function () {});
+  });
+}
+</script>
+</body>
+</html>
