@@ -1,51 +1,77 @@
-/* 满分英语 Service Worker：离线可用（需通过 http/https 访问） */
-const CACHE = 'fullscore-en-v5';
+﻿/* ===========================================================
+ *  英语 · 离线缓存 Service Worker
+ *  —— 装到主屏幕后，没网也能打开
+ *
+ *  ⚠️ 改完网页文件后，把下面的版本号往上加一（再上传），
+ *     手机上的旧缓存才会更新。
+ * =========================================================== */
+const VERSION = 'v10';
+const CACHE = 'english-match-' + VERSION;
+
 const ASSETS = [
   './',
   './index.html',
+  './styles.css',
+  './app.js',
+  './words.js',
   './manifest.webmanifest',
-  './css/app.css',
-  './js/data-vocab.js',
-  './js/data-course.js',
-  './js/data-bank.js',
-  './js/data-bank2.js',
-  './js/engine.js',
-  './js/core.js',
-  './js/ui-home.js',
-  './js/ui-vocab.js',
-  './js/ui-grammar.js',
-  './js/ui-practice.js',
-  './js/ui-mock.js',
-  './js/ui-plan.js',
-  './js/ui-me.js',
-  './js/ui-review.js',
-  './icons/icon-192.png',
-  './icons/icon-512.png',
-  './icons/apple-touch-icon.png'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './apple-touch-icon.png',
+  /* 学习中心 */
+  './study.html',
+  './study.css',
+  './study.js',
+  './data/data-tcm.js',
+  './data/data-grammar.js',
+  './data/data-errors.js',
 ];
 
-self.addEventListener('install', function (e) {
-  e.waitUntil(caches.open(CACHE).then(function (c) { return c.addAll(ASSETS); }).then(function () { return self.skipWaiting(); }));
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open(CACHE)
+      .then(c => c.addAll(ASSETS))
+      .catch(() => {})
+      .then(() => self.skipWaiting())
+  );
 });
 
-self.addEventListener('activate', function (e) {
-  e.waitUntil(caches.keys().then(function (keys) {
-    return Promise.all(keys.filter(function (k) { return k !== CACHE; }).map(function (k) { return caches.delete(k); }));
-  }).then(function () { return self.clients.claim(); }));
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
 });
 
-self.addEventListener('fetch', function (e) {
-  if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then(function (hit) {
-      if (hit) return hit;
-      return fetch(e.request).then(function (res) {
-        if (res && res.ok && e.request.url.indexOf(location.origin) === 0) {
-          const copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(e.request, copy); });
-        }
+self.addEventListener('fetch', e => {
+  const req = e.request;
+  if (req.method !== 'GET') return;
+  let url;
+  try { url = new URL(req.url); } catch (err) { return; }
+  if (url.origin !== self.location.origin) return;
+
+  // 页面导航：优先用缓存里的首页（离线可用）
+  if (req.mode === 'navigate') {
+    e.respondWith(
+      fetch(req).then(res => {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put('./index.html', copy)).catch(() => {});
         return res;
-      }).catch(function () { return caches.match('./index.html'); });
-    })
+      }).catch(() => caches.match('./index.html').then(r => r || caches.match('./')))
+    );
+    return;
+  }
+
+  // 其它资源：缓存优先
+  e.respondWith(
+    caches.match(req).then(hit => hit || fetch(req).then(res => {
+      if (res && res.status === 200 && res.type === 'basic') {
+        const copy = res.clone();
+        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+      }
+      return res;
+    }).catch(() => caches.match(req)))
   );
 });
