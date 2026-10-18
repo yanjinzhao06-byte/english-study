@@ -156,15 +156,12 @@
 
     var html = '';
     if (tab === 'tcm') {
-      html = '<span class="ms-main">练过 <b>' + stats.tcm.t + '</b> 次</span>' +
-        '<span class="ms-sub">累计 ' + stats.tcm.n + ' 张 · 已背 ' + memoCount() + '/' + totalTcm() + '</span>';
+      html = '<span class="ms-sub">累计 ' + stats.tcm.n + ' 张 · 已背 ' + memoCount() + '/' + totalTcm() + '</span>';
     } else if (tab === 'gram') {
-      html = '<span class="ms-main">练过 <b>' + stats.gram.t + '</b> 次</span>' +
-        '<span class="ms-sub">累计 ' + stats.gram.n + ' 条</span>';
+      html = '<span class="ms-sub">累计 ' + stats.gram.n + ' 条</span>';
     } else {
       var r = stats.err.t > 0 ? Math.round(stats.err.ok / stats.err.t * 100) : 0;
-      html = '<span class="ms-main">已答 <b>' + stats.err.t + '</b> 题</span>' +
-        '<span class="ms-sub">答对 ' + stats.err.ok + '（' + r + '%）</span>';
+      html = '<span class="ms-sub">答对 ' + stats.err.ok + ' 题（正确率 ' + r + '%）</span>';
     }
     html += '<button class="ms-reset" data-reset="mod" data-mod="' + tab + '">清零</button>';
     box.innerHTML = html;
@@ -179,16 +176,15 @@
 
     if (tab === 'tcm') {
       title = '🀄 中医基础理论';
-      sub = '已完成 ' + memoCount() + '/' + totalTcm() + ' 张 · 练过 ' + stats.tcm.t + ' 次';
+      sub = '陈建章第三版 · 高职高专“十四五”';
       searchable = true;
       tools = true;
     } else if (tab === 'gram') {
       title = '📐 英语语法卡片';
-      sub = '按河南改错 12 类考点组织 · 练过 ' + stats.gram.t + ' 次';
+      sub = '按河南改错 12 类考点组织';
     } else {
       title = '🔍 改错找错练习';
-      var r2 = stats.err.t > 0 ? Math.round(stats.err.ok / stats.err.t * 100) : 0;
-      sub = '已答 ' + stats.err.t + ' 题 · 答对 ' + stats.err.ok + '（' + r2 + '%）';
+      sub = '河南公共英语 改错 20 分 · 2 分 × 10 题';
     }
 
     $('#list-title').textContent = title;
@@ -196,10 +192,27 @@
     $('#list-search-wrap').hidden = !searchable;
     $('#search-input').value = '';
     $('#btnSelfTest').hidden = (tab !== 'tcm');
+    renderBadge(tab);
     renderModStats(tab);
     renderTools(tools);
     renderList('');
     show('scr-list');
+  }
+
+  /* 页头右侧：醒目的练习次数徽标 */
+  function renderBadge(tab) {
+    var box = $('#list-badge');
+    if (!box) return;
+    if (!tab) { box.hidden = true; box.innerHTML = ''; return; }
+    var lab = '练过', num = 0, unit = '次';
+    if (tab === 'tcm') { num = stats.tcm.t; }
+    else if (tab === 'gram') { num = stats.gram.t; }
+    else { lab = '已答'; num = stats.err.t; unit = '题'; }
+    box.innerHTML =
+      '<span class="hb-lab">' + lab + '</span>' +
+      '<b class="hb-num">' + num + '</b>' +
+      '<span class="hb-unit">' + unit + '</span>';
+    box.hidden = false;
   }
 
   function renderTools(on) {
