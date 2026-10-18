@@ -1,0 +1,18 @@
+{
+  "name": "英语 · 背单词",
+  "short_name": "英语",
+  "description": "中英单词配对消除游戏，U1–U12 共 3792 词，带错题本、生词本、打卡与复习次数统计。",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff6fb",
+  "theme_color": "#ff9ec7",
+  "lang": "zh-CN",
+  "categories": ["education", "games"],
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "./icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
