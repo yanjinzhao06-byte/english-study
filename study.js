@@ -30,6 +30,51 @@
   try { selfTest = localStorage.getItem(SKEY) === '1'; } catch (e) { selfTest = false; }
   function saveSelfTest() { try { localStorage.setItem(SKEY, selfTest ? '1' : '0'); } catch (e) {} }
 
+  /* ---------------- 练习次数统计 ---------------- */
+  var STKEY = 'study.stats.v1';
+  var stats = {
+    tcm:  { t: 0, n: 0 },          // t=练习次数   n=累计看过的张数
+    gram: { t: 0, n: 0 },          // t=练习次数   n=累计看过的条数
+    err:  { t: 0, n: 0, ok: 0 },   // t=答完的题数 n=同上  ok=答对
+    since: 0
+  };
+  try {
+    var s0 = JSON.parse(localStorage.getItem(STKEY));
+    if (s0 && typeof s0 === 'object') {
+      ['tcm', 'gram', 'err'].forEach(function (k) {
+        if (s0[k]) {
+          stats[k].t = s0[k].t | 0;
+          stats[k].n = s0[k].n | 0;
+          if (k === 'err') stats[k].ok = s0[k].ok | 0;
+        }
+      });
+      stats.since = s0.since | 0;
+    }
+  } catch (e) { /* 忽略 */ }
+
+  function saveStats() { try { localStorage.setItem(STKEY, JSON.stringify(stats)); } catch (e) {} }
+  function statsTotal() { return stats.tcm.t + stats.gram.t + stats.err.t; }
+
+  /* 一次「练习」＝ 打开一组内容且看到至少 1 张 / 答完 1 题 */
+  var sess = null;
+  function beginSession(mod) {
+    commitSession();
+    sess = { mod: mod, max: 0 };
+  }
+  function noteSeen(i) {
+    if (sess && i > sess.max) sess.max = i;
+  }
+  function commitSession() {
+    if (!sess) return;
+    if (sess.max > 0 && stats[sess.mod]) {
+      stats[sess.mod].t += 1;
+      stats[sess.mod].n += sess.max;
+      if (!stats.since) stats.since = Date.now();
+      saveStats();
+    }
+    sess = null;
+  }
+
   /* ---------------- 工具 ---------------- */
   function esc(s) {
     return String(s == null ? '' : s)
@@ -85,9 +130,14 @@
   /* ---------------- 首页 ---------------- */
   function initHome() {
     var t = totalTcm(), m = memoCount();
-    $('#cnt-tcm').textContent = TCM.chapters.length + ' 章 · ' + t + ' 张卡 · 已背 ' + m + '（' + Math.round(m / t * 100) + '%）';
-    $('#cnt-gram').textContent = GR.chapters.length + ' 章 · ' + GR.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 条规则';
-    $('#cnt-err').textContent = ER.chapters.length + ' 类考点 · ' + ER.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 道题';
+    $('#cnt-tcm').textContent = TCM.chapters.length + ' 章 · ' + t + ' 张卡 · 已背 ' + m +
+      '（' + Math.round(m / t * 100) + '%）· 练过 ' + stats.tcm.t + ' 次';
+    $('#cnt-gram').textContent = GR.chapters.length + ' 章 · ' +
+      GR.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 条规则 · 练过 ' + stats.gram.t + ' 次';
+    $('#cnt-err').textContent = ER.chapters.length + ' 类考点 · ' +
+      ER.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 道题 · 练过 ' + stats.err.t + ' 次';
+
+    renderStats();
 
     var e = TCM.meta && TCM.meta.edition;
     var cf = TCM.meta && TCM.meta.confirmed;
@@ -101,22 +151,46 @@
     }
   }
 
+  function renderStats() {
+    var box = $('#stats-total');
+    if (!box) return;
+    var total = statsTotal();
+    var rate = stats.err.t > 0 ? Math.round(stats.err.ok / stats.err.t * 100) : 0;
+    var since = '';
+    if (stats.since) {
+      var d = new Date(stats.since);
+      since = '自 ' + d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') +
+        '-' + String(d.getDate()).padStart(2, '0') + ' 起';
+    }
+    box.innerHTML =
+      '<div class="st-hd"><span>累计练习</span><b>' + total + '</b><span>次</span></div>' +
+      '<div class="st-row">' +
+      '<span>🀄 中医 <b>' + stats.tcm.t + '</b> 次<em>（' + stats.tcm.n + ' 张）</em></span>' +
+      '<span>📐 语法 <b>' + stats.gram.t + '</b> 次<em>（' + stats.gram.n + ' 条）</em></span>' +
+      '<span>🔍 改错 <b>' + stats.err.t + '</b> 题<em>（答对 ' + stats.err.ok + '，' + rate + '%）</em></span>' +
+      '</div>' +
+      '<div class="st-ft">' + (since ? since + ' · ' : '') +
+      '<button class="st-reset" data-reset="stats">清零统计</button></div>';
+  }
+
   /* ---------------- 目录页 ---------------- */
   function openList(tab) {
+    commitSession();
     state.tab = tab;
     var title = '', sub = '', searchable = false, tools = false;
 
     if (tab === 'tcm') {
       title = '🀄 中医基础理论';
-      sub = '✅ 只考中基一科 · 主线＝陈建章第三版 · 已背 ' + memoCount() + '/' + totalTcm();
+      sub = '已完成 ' + memoCount() + '/' + totalTcm() + ' 张 · 练过 ' + stats.tcm.t + ' 次';
       searchable = true;
       tools = true;
     } else if (tab === 'gram') {
       title = '📐 英语语法卡片';
-      sub = '按河南改错 12 类考点组织，基础差从第 0 章看起';
+      sub = '按河南改错 12 类考点组织 · 练过 ' + stats.gram.t + ' 次';
     } else {
       title = '🔍 改错找错练习';
-      sub = '河南公共英语 改错 20 分 · 2 分 × 10 题';
+      var r2 = stats.err.t > 0 ? Math.round(stats.err.ok / stats.err.t * 100) : 0;
+      sub = '已答 ' + stats.err.t + ' 题 · 答对 ' + stats.err.ok + '（' + r2 + '%）';
     }
 
     $('#list-title').textContent = title;
@@ -229,17 +303,20 @@
       });
       renderTcmCards(items);
     } else {
+      beginSession('gram');
       renderGramCards(chap);
     }
     show('scr-cards');
   }
 
   function renderTcmCards(items) {
+    beginSession('tcm');
     var body = $('#cards-body');
     if (!items.length) {
       body.innerHTML = '<div class="empty">这里没有卡片</div>';
       $('#card-pos').textContent = '0 / 0';
       $('#card-memo').textContent = '';
+      sess = null;
       return;
     }
     body.innerHTML = items.map(function (it, i) {
@@ -291,13 +368,16 @@
     var cards = body.querySelectorAll('.card[data-card]');
     if (!cards.length) { $('#card-pos').textContent = '0 / 0'; return; }
     $('#card-pos').textContent = '1 / ' + cards.length;
+    noteSeen(1);
     if (_io) { try { _io.disconnect(); } catch (e) {} _io = null; }
-    if (!('IntersectionObserver' in window)) return;
+    if (!('IntersectionObserver' in window)) { noteSeen(cards.length); return; }
 
     _io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (en.isIntersecting) {
-          $('#card-pos').textContent = en.target.getAttribute('data-card') + ' / ' + cards.length;
+          var idx = +en.target.getAttribute('data-card');
+          $('#card-pos').textContent = idx + ' / ' + cards.length;
+          noteSeen(idx);
         }
       });
     }, { root: body, threshold: 0.6 });
@@ -390,6 +470,14 @@
     return c ? c.title : '';
   }
 
+  function recordErr(ok) {
+    stats.err.t += 1;
+    stats.err.n += 1;
+    if (ok) stats.err.ok += 1;
+    if (!stats.since) stats.since = Date.now();
+    saveStats();
+  }
+
   function judge(clickedStart) {
     if (state.answered) return;
     var ctx = state.ctx;
@@ -408,6 +496,7 @@
 
     if (ok) {
       buzz('ok');
+      recordErr(true);
       if (ctx.hasError) {
         var els = $('#quiz-sentence').querySelectorAll('.word');
         for (var i = 0; i < els.length; i++) {
@@ -453,10 +542,32 @@
       if (go) {
         var to = go.getAttribute('data-go');
         buzz('tap');
+        commitSession();
         if (to === 'home') { initHome(); show('scr-home'); return; }
         if (to === 'list') { openList(state.tab || 'tcm'); return; }
         if (to === 'back') { location.href = 'index.html'; return; }
         openList(to);
+        return;
+      }
+
+      /* 首页统计清零 */
+      var rst = ev.target.closest('[data-reset="stats"]');
+      if (rst) {
+        buzz('tap');
+        if (rst.getAttribute('data-confirm') === '1') {
+          stats = { tcm: { t: 0, n: 0 }, gram: { t: 0, n: 0 }, err: { t: 0, n: 0, ok: 0 }, since: 0 };
+          saveStats();
+          initHome();
+        } else {
+          rst.setAttribute('data-confirm', '1');
+          rst.textContent = '⚠ 再点一次确认清零';
+          setTimeout(function () {
+            if (rst.getAttribute('data-confirm') === '1') {
+              rst.removeAttribute('data-confirm');
+              rst.textContent = '清零统计';
+            }
+          }, 3000);
+        }
         return;
       }
 
@@ -547,6 +658,7 @@
       $('#btn-skip').disabled = true;
       markSpanWords('reveal');
       buzz('bad');
+      recordErr(false);
       var panel = $('#quiz-answer');
       panel.hidden = false;
       panel.className = 'answer bad';
@@ -604,6 +716,12 @@
     initHome();
     syncSelfTestBtn();
     bind();
+
+    /* 切到后台 / 关页面 时也把本次练习记下来 */
+    window.addEventListener('pagehide', commitSession);
+    document.addEventListener('visibilitychange', function () {
+      if (document.visibilityState === 'hidden') commitSession();
+    });
     show('scr-home');
   }
 
