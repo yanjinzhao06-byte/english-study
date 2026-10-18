@@ -1,0 +1,11 @@
+# Netlify 响应头：让 manifest 用正确的 MIME 类型
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+
+# Service Worker 不要被长期缓存，否则更新不生效
+/sw.js
+  Cache-Control: no-cache
+
+# 图标可以缓存久一点
+/*.png
+  Cache-Control: public, max-age=2592000
