@@ -5,7 +5,7 @@
  *  ⚠️ 改完网页文件后，把下面的版本号往上加一（再上传），
  *     手机上的旧缓存才会更新。
  * =========================================================== */
-const VERSION = 'v14';
+const VERSION = 'v15';
 const CACHE = 'english-match-' + VERSION;
 
 const ASSETS = [
