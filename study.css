@@ -68,16 +68,30 @@ body{
 .entry.ghost{background:rgba(255,255,255,.6); border-style:dashed}
 .foot-note{margin:auto 2px 0; font-size:11.5px; color:#b3a6bd; line-height:1.65}
 
+/* ---------- 页头右侧：醒目练习次数徽标 ---------- */
+.hd-badge{
+  flex:0 0 auto; margin-left:auto;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  min-width:78px; padding:9px 13px; border-radius:17px;
+  background:linear-gradient(135deg,#ff9ecb 0%,#c9a8ff 100%);
+  color:#fff; line-height:1;
+  box-shadow:0 6px 18px rgba(214,132,186,.45), inset 0 1px 0 rgba(255,255,255,.45);
+}
+.hd-badge .hb-lab{font-size:10.5px; letter-spacing:1.5px; opacity:.92; font-weight:600}
+.hd-badge .hb-num{font-size:27px; font-weight:800; margin:3px 0 2px; letter-spacing:-.5px;
+  text-shadow:0 1px 3px rgba(140,70,130,.28)}
+.hd-badge .hb-unit{font-size:10.5px; letter-spacing:1px; opacity:.92; font-weight:600}
+
 /* ---------- 模块页练习统计条 ---------- */
 .mod-stats{
   flex:0 0 auto; display:flex; align-items:center; gap:9px; flex-wrap:wrap;
   background:linear-gradient(135deg,#fff6fb,#f3f0ff);
   border:1px solid var(--line); border-radius:14px;
-  padding:10px 13px; margin-bottom:10px; box-shadow:var(--sh);
+  padding:9px 13px; margin-bottom:10px; box-shadow:var(--sh);
 }
 .ms-main{font-size:13px; color:#5d5068}
 .ms-main b{font-size:19px; color:#a34a7c; margin:0 2px; line-height:1}
-.ms-sub{font-size:11.5px; color:#a99cb5}
+.ms-sub{font-size:12.5px; color:#7c6b88}
 .ms-reset{
   margin-left:auto; border:1px solid var(--line); background:#fff; color:#b3a6bd;
   font-size:11px; font-family:inherit; padding:4px 10px; border-radius:20px; cursor:pointer;
@@ -284,7 +298,12 @@ body{
   .mod-stats{background:linear-gradient(135deg,#2e2637,#282336)}
   .ms-main{color:#d6cbe0}
   .ms-main b{color:#f0a8ce}
+  .ms-sub{color:#b3a6bd}
   .ms-reset{background:#332b3c; color:#b3a6bd}
+  .hd-badge{
+    background:linear-gradient(135deg,#b3588c 0%,#7f63b8 100%);
+    box-shadow:0 6px 18px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.18);
+  }
   .btn-mini{background:#332b3c; color:#cdc0d8}
   .word:active{background:#3d3048}
   .btn-mode,.tool-btn{background:#332b3c; color:#cdc0d8}
