@@ -53,7 +53,6 @@
   } catch (e) { /* 忽略 */ }
 
   function saveStats() { try { localStorage.setItem(STKEY, JSON.stringify(stats)); } catch (e) {} }
-  function statsTotal() { return stats.tcm.t + stats.gram.t + stats.err.t; }
 
   /* 一次「练习」＝ 打开一组内容且看到至少 1 张 / 答完 1 题 */
   var sess = null;
@@ -130,14 +129,12 @@
   /* ---------------- 首页 ---------------- */
   function initHome() {
     var t = totalTcm(), m = memoCount();
-    $('#cnt-tcm').textContent = TCM.chapters.length + ' 章 · ' + t + ' 张卡 · 已背 ' + m +
-      '（' + Math.round(m / t * 100) + '%）· 练过 ' + stats.tcm.t + ' 次';
+    $('#cnt-tcm').textContent = TCM.chapters.length + ' 章 · ' + t + ' 张卡 · 已背 ' +
+      m + '（' + Math.round(m / t * 100) + '%）';
     $('#cnt-gram').textContent = GR.chapters.length + ' 章 · ' +
-      GR.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 条规则 · 练过 ' + stats.gram.t + ' 次';
+      GR.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 条规则';
     $('#cnt-err').textContent = ER.chapters.length + ' 类考点 · ' +
-      ER.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 道题 · 练过 ' + stats.err.t + ' 次';
-
-    renderStats();
+      ER.chapters.reduce(function (a, c) { return a + c.items.length; }, 0) + ' 道题';
 
     var e = TCM.meta && TCM.meta.edition;
     var cf = TCM.meta && TCM.meta.confirmed;
@@ -151,26 +148,27 @@
     }
   }
 
-  function renderStats() {
-    var box = $('#stats-total');
+  /* 各模块自己页面里的练习统计条 */
+  function renderModStats(tab) {
+    var box = $('#list-stats');
     if (!box) return;
-    var total = statsTotal();
-    var rate = stats.err.t > 0 ? Math.round(stats.err.ok / stats.err.t * 100) : 0;
-    var since = '';
-    if (stats.since) {
-      var d = new Date(stats.since);
-      since = '自 ' + d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') +
-        '-' + String(d.getDate()).padStart(2, '0') + ' 起';
+    if (!tab) { box.hidden = true; box.innerHTML = ''; return; }
+
+    var html = '';
+    if (tab === 'tcm') {
+      html = '<span class="ms-main">练过 <b>' + stats.tcm.t + '</b> 次</span>' +
+        '<span class="ms-sub">累计 ' + stats.tcm.n + ' 张 · 已背 ' + memoCount() + '/' + totalTcm() + '</span>';
+    } else if (tab === 'gram') {
+      html = '<span class="ms-main">练过 <b>' + stats.gram.t + '</b> 次</span>' +
+        '<span class="ms-sub">累计 ' + stats.gram.n + ' 条</span>';
+    } else {
+      var r = stats.err.t > 0 ? Math.round(stats.err.ok / stats.err.t * 100) : 0;
+      html = '<span class="ms-main">已答 <b>' + stats.err.t + '</b> 题</span>' +
+        '<span class="ms-sub">答对 ' + stats.err.ok + '（' + r + '%）</span>';
     }
-    box.innerHTML =
-      '<div class="st-hd"><span>累计练习</span><b>' + total + '</b><span>次</span></div>' +
-      '<div class="st-row">' +
-      '<span>🀄 中医 <b>' + stats.tcm.t + '</b> 次<em>（' + stats.tcm.n + ' 张）</em></span>' +
-      '<span>📐 语法 <b>' + stats.gram.t + '</b> 次<em>（' + stats.gram.n + ' 条）</em></span>' +
-      '<span>🔍 改错 <b>' + stats.err.t + '</b> 题<em>（答对 ' + stats.err.ok + '，' + rate + '%）</em></span>' +
-      '</div>' +
-      '<div class="st-ft">' + (since ? since + ' · ' : '') +
-      '<button class="st-reset" data-reset="stats">清零统计</button></div>';
+    html += '<button class="ms-reset" data-reset="mod" data-mod="' + tab + '">清零</button>';
+    box.innerHTML = html;
+    box.hidden = false;
   }
 
   /* ---------------- 目录页 ---------------- */
@@ -198,6 +196,7 @@
     $('#list-search-wrap').hidden = !searchable;
     $('#search-input').value = '';
     $('#btnSelfTest').hidden = (tab !== 'tcm');
+    renderModStats(tab);
     renderTools(tools);
     renderList('');
     show('scr-list');
@@ -550,21 +549,23 @@
         return;
       }
 
-      /* 首页统计清零 */
-      var rst = ev.target.closest('[data-reset="stats"]');
+      /* 模块页：清零本模块统计 */
+      var rst = ev.target.closest('[data-reset="mod"]');
       if (rst) {
         buzz('tap');
+        var mod = rst.getAttribute('data-mod');
         if (rst.getAttribute('data-confirm') === '1') {
-          stats = { tcm: { t: 0, n: 0 }, gram: { t: 0, n: 0 }, err: { t: 0, n: 0, ok: 0 }, since: 0 };
+          if (mod === 'err') stats.err = { t: 0, n: 0, ok: 0 };
+          else if (stats[mod]) stats[mod] = { t: 0, n: 0 };
           saveStats();
-          initHome();
+          openList(state.tab || 'tcm');
         } else {
           rst.setAttribute('data-confirm', '1');
-          rst.textContent = '⚠ 再点一次确认清零';
+          rst.textContent = '再点确认';
           setTimeout(function () {
             if (rst.getAttribute('data-confirm') === '1') {
               rst.removeAttribute('data-confirm');
-              rst.textContent = '清零统计';
+              rst.textContent = '清零';
             }
           }, 3000);
         }
