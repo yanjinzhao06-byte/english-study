@@ -176,15 +176,15 @@
 
     if (tab === 'tcm') {
       title = '🀄 中医基础理论';
-      sub = '陈建章第三版 · 高职高专“十四五”';
+      sub = '陈建章第三版';
       searchable = true;
       tools = true;
     } else if (tab === 'gram') {
       title = '📐 英语语法卡片';
-      sub = '按河南改错 12 类考点组织';
+      sub = '河南改错 12 类考点';
     } else {
       title = '🔍 改错找错练习';
-      sub = '河南公共英语 改错 20 分 · 2 分 × 10 题';
+      sub = '改错 20 分 · 10 题';
     }
 
     $('#list-title').textContent = title;
@@ -199,15 +199,15 @@
     show('scr-list');
   }
 
-  /* 页头右侧：醒目的练习次数徽标 */
+  /* 页头右侧：醒目的累计练习次数徽标 */
   function renderBadge(tab) {
     var box = $('#list-badge');
     if (!box) return;
     if (!tab) { box.hidden = true; box.innerHTML = ''; return; }
-    var lab = '练过', num = 0, unit = '次';
+    var lab = '累计练习', num = 0, unit = '次';
     if (tab === 'tcm') { num = stats.tcm.t; }
     else if (tab === 'gram') { num = stats.gram.t; }
-    else { lab = '已答'; num = stats.err.t; unit = '题'; }
+    else { lab = '累计答题'; num = stats.err.t; unit = '题'; }
     box.innerHTML =
       '<span class="hb-lab">' + lab + '</span>' +
       '<b class="hb-num">' + num + '</b>' +
